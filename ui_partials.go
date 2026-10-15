@@ -1,4 +1,7 @@
-{{define "nav"}}
+package main
+
+// ส่วนที่ใช้ร่วมกันทุกหน้า: แถบเมนู (nav) (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const partialsPage = `{{define "nav"}}
 <nav class="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between min-h-16 py-2 flex-wrap gap-2">
@@ -17,4 +20,4 @@
         </div>
     </div>
 </nav>
-{{end}}
+{{end}}`

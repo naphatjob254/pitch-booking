@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// หน้าสมัครสมาชิก (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const registerPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -41,4 +44,4 @@
         <p class="mt-6 text-center text-sm text-zinc-400">มีบัญชีอยู่แล้ว? <a href="/login" class="text-pink-400 font-semibold hover:text-pink-300">เข้าสู่ระบบ</a></p>
     </div>
 </body>
-</html>
+</html>`

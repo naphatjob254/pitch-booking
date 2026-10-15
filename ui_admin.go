@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// หน้าผู้ดูแลระบบ (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const adminPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -135,4 +138,4 @@
         </div>
     </div>
 </body>
-</html>
+</html>`

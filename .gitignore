@@ -1,3 +1,16 @@
-# .gitignore
-*.exe
+# ไฟล์ลับ / ตั้งค่าเฉพาะเครื่อง (ห้ามอัปโหลดขึ้น GitHub)
 .env
+run.bat
+run-public.bat
+*.local.bat
+
+# ไฟล์ที่ build ออกมา
+*.exe
+j-match-arena
+pitch-booking
+
+# ไฟล์ระบบ / editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

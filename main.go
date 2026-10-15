@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"math"
 	"net"
 	"net/http"
 	"os"
@@ -23,13 +22,11 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	db        *sql.DB
 	store     *sessions.CookieStore
 	tmpl      *template.Template
 	dummyHash []byte // ใช้เทียบรหัสผ่านตอนไม่พบ user เพื่อให้เวลาตอบใกล้เคียงกัน
@@ -44,55 +41,6 @@ type Viewer struct {
 	Role     string
 }
 
-type MatchJoiner struct {
-	Username string
-	Phone    string // จะมีค่าเฉพาะตอนผู้ดูเป็นเจ้าของโพสต์
-}
-
-type Match struct {
-	ID            int
-	UserID        int
-	OwnerName     string
-	OwnerPhone    string
-	TeamName      string
-	Title         string
-	PitchType     string
-	PlayersNeeded int
-	CurrentJoin   int
-	HasJoined     bool
-	IsOwner       bool
-	Joiners       []MatchJoiner
-}
-
-type Pitch struct {
-	ID           int
-	Name         string
-	PitchType    string
-	PricePerHour int
-	AvgRating    float64
-	ReviewCount  int
-	Stars        string
-}
-
-type Review struct {
-	ID        int
-	Username  string
-	Rating    int
-	Comment   string
-	Stars     string
-	UpdatedAt string
-	IsOwner   bool
-}
-
-type AdminReview struct {
-	ID        int
-	Username  string
-	PitchName string
-	Rating    int
-	Stars     string
-	Comment   string
-}
-
 func stars(n int) string {
 	if n < 0 {
 		n = 0
@@ -103,33 +51,6 @@ func stars(n int) string {
 	return strings.Repeat("★", n) + strings.Repeat("☆", 5-n)
 }
 
-type Booking struct {
-	ID          int
-	PitchName   string
-	BookingDate string
-	StartTime   string
-	Status      string
-}
-
-type AdminMatch struct {
-	ID            int
-	Username      string
-	TeamName      string
-	Title         string
-	PitchType     string
-	PlayersNeeded int
-}
-
-type AdminBooking struct {
-	ID          int
-	Username    string
-	Phone       string
-	PitchName   string
-	BookingDate string
-	StartTime   string
-	Status      string
-}
-
 // ==========================================
 // Config / init
 // ==========================================
@@ -138,20 +59,6 @@ func env(key, def string) string {
 		return v
 	}
 	return def
-}
-
-func initDB() {
-	var err error
-	dsn := env("DB_DSN", "root:@tcp(127.0.0.1:3306)/pitch_booking?charset=utf8mb4")
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatal("DB Connect Error: ", err)
-	}
-	db.SetMaxOpenConns(20)
-	db.SetConnMaxLifetime(5 * time.Minute)
-	if err = db.Ping(); err != nil {
-		log.Fatal("DB Ping Error: ", err)
-	}
 }
 
 func initStore() {
@@ -249,11 +156,6 @@ func render(w http.ResponseWriter, r *http.Request, name string, data map[string
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Cache-Control", "no-store")
 	buf.WriteTo(w)
-}
-
-func isDup(err error) bool {
-	var me *mysql.MySQLError
-	return errors.As(err, &me) && me.Number == 1062
 }
 
 func hhmm(s string) string {
@@ -445,7 +347,7 @@ func main() {
 	}
 
 	initStore()
-	tmpl = template.Must(template.ParseGlob("templates/*.html"))
+	tmpl = loadTemplates() // หน้าเว็บทั้งหมดอยู่ในไฟล์ ui_*.go
 	dummyHash, _ = bcrypt.GenerateFromPassword([]byte("dummy-password"), bcrypt.DefaultCost)
 
 	mux := http.NewServeMux()
@@ -706,27 +608,6 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request, v Viewer) {
 		return
 	}
 	render(w, r, "dashboard.html", map[string]interface{}{"Matches": matches, "Active": "match"})
-}
-
-func loadPitches() ([]Pitch, error) {
-	rows, err := db.Query(`SELECT p.id, p.name, p.pitch_type, p.price_per_hour,
-			COALESCE(ROUND(AVG(r.rating), 1), 0), COUNT(r.id)
-		FROM pitches p LEFT JOIN reviews r ON r.pitch_id = p.id
-		GROUP BY p.id, p.name, p.pitch_type, p.price_per_hour ORDER BY p.id`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	pitches := []Pitch{}
-	for rows.Next() {
-		var p Pitch
-		if err := rows.Scan(&p.ID, &p.Name, &p.PitchType, &p.PricePerHour, &p.AvgRating, &p.ReviewCount); err != nil {
-			return nil, err
-		}
-		p.Stars = stars(int(math.Round(p.AvgRating)))
-		pitches = append(pitches, p)
-	}
-	return pitches, rows.Err()
 }
 
 // อ่านและตรวจฟอร์มโพสต์ คืนค่า (ข้อมูล, ข้อความ error)

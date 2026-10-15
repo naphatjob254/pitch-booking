@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// หน้ารายการสนามและคะแนนรีวิว (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const pitchesPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -43,4 +46,4 @@
         </div>
     </div>
 </body>
-</html>
+</html>`

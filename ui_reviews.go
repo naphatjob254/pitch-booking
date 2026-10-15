@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// หน้ารีวิวและให้คะแนนสนาม (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const reviewsPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -72,4 +75,4 @@
         </div>
     </div>
 </body>
-</html>
+</html>`

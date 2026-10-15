@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// ฟอร์มสร้าง/แก้ไขโพสต์หาคนเตะ (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const formPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -59,4 +62,4 @@
     </div>
     </div>
 </body>
-</html>
+</html>`

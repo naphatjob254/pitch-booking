@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+package main
+
+// หน้าหลัก: บอร์ดหาคนเตะบอล (เทมเพลต html/template เก็บเป็นข้อความในไฟล์ Go)
+const dashboardPage = `<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -82,4 +85,4 @@
         {{end}}
     </div>
 </body>
-</html>
+</html>`
